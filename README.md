@@ -1,6 +1,6 @@
 # ops_scripts
 运维工作中写的脚本
-## auto_restart_downstream_dag.py
+## 1. auto_restart_downstream_dag.py
 通过airflow api，用户给定dag_id和重跑时间，自动调起其下游依赖。
 ```sh
 ~# python3 auto_restart_downstream_dag.py 
@@ -21,4 +21,12 @@ optional arguments:
                         默认非交互式。数值0或者1，是否交互式运行；交互式运行可以选择需要运行的dag
 
 ```
+## 2. monitor_ck_qps.py
+监控clickhouse每一个用户的QPS是否达到所啥配置配额的80%；如果是则告警； 使用企业微信告警机器人告警；并将监控信息推送一份至prometheus，以作图用。
 
+`restart.sh`
+```sh
+#!/bin/bash
+ps -ef | grep "monitor_ck_qps.py" | grep -v grep | awk '{print $2}' | xargs kill -9
+nohup /monitor/diy_script/diy_monitor/bin/python monitor_ck_qps.py > /dev/null 2>&1 &
+```
